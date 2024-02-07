@@ -1,4 +1,4 @@
-package cordova-plugin-grouplink;
+package cordova.plugin.grouplink;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
