@@ -1,0 +1,25 @@
+{
+  "name": "cordova-plugin-grouplink",
+  "version": "0.0.1",
+  "description": "Group Link Cordova Plugin",
+  "cordova": {
+    "id": "cordova-plugin-grouplink",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SidiBecker/cordova-plugin-grouplink.git"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "SidiBecker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SidiBecker/cordova-plugin-grouplink/issues"
+  },
+  "homepage": "https://github.com/SidiBecker/cordova-plugin-grouplink#readme"
+}
