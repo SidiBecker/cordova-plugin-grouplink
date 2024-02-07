@@ -10,4 +10,4 @@ GroupLink.coolMethod = function (arg0, success, error) {
 
 
 
-exports.GroupLink;
+module.exports = GroupLink;
