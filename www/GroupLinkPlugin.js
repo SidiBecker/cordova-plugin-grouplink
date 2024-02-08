@@ -11,6 +11,10 @@ groupLink.register = function (param, success, error) {
     execMethod('register', param, success, error);
 };
 
+groupLink.requestPermissions = function (param, success, error) {
+    execMethod('requestPermissions', param, success, error);
+};
+
 if (!window.plugins) {
     window.plugins = {};
 }
