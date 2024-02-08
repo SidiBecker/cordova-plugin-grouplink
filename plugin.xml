@@ -14,7 +14,7 @@
 
         <!-- <framework src="com.grouplinknetwork:lib-grouplinknetwork:4.3.12" /> -->
 
-        <framework src="grouplink-plugin.gradle" custom="true" type="gradleReference" />
+        <framework src="src/android/grouplink-plugin.gradle" custom="true" type="gradleReference" />
 
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="GroupLinkPlugin">
