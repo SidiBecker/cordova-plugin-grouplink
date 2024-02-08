@@ -3,9 +3,13 @@
     xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <name>GroupLinkPlugin</name>
-    <js-module name="GroupLinkPlugin" src="www/GroupLinkPlugin.js">
-        <clobbers target="cordova.plugins.GroupLinkPlugin" />
+
+
+    <js-module name="groupLink" src="www/GroupLinkPlugin.js">
+        <clobbers target="groupLink" />
     </js-module>
+
+
     <platform name="android">
 
         <!-- <framework src="com.grouplinknetwork:lib-grouplinknetwork:4.3.12" /> -->
@@ -14,12 +18,15 @@
 
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="GroupLinkPlugin">
-                <param name="android-package" value="cordova-plugin-grouplink.GroupLinkPlugin" />
+                <param name="android-package" value="cordova.plugin.grouplink.GroupLinkPlugin" />
             </feature>
         </config-file>
-        <config-file parent="/*" target="AndroidManifest.xml"></config-file>
+
         <source-file src="src/android/GroupLinkPlugin.java"
-            target-dir="src/cordova-plugin-grouplink/GroupLinkPlugin" />
+            target-dir="src/cordova/plugin/grouplink" />
+
+        <config-file parent="/*" target="AndroidManifest.xml"></config-file>
+
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.INTERNET" />
