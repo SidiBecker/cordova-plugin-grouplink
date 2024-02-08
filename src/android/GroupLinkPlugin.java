@@ -64,17 +64,18 @@ public class GroupLinkPlugin extends CordovaPlugin {
     private int count = 0;
     private int countAutoStart = 0;
 
-    private interface Actions {
-        public static final String REGISTER = "register";
-        public static final String REQUEST_PERMISSIONS = "requestPermissions";
-    }
-
     private Context getContext() {
         return this.cordova.getActivity().getApplicationContext();
     }
 
     private Activity getActivity() {
         return this.cordova.getActivity();
+    }
+
+    private interface Actions{
+        public static final String REGISTER = "register";
+        public static final String REQUEST_PERMISSIONS = "requestPermissions";
+        public static final String GET_USER_ID = "getUserId";
     }
 
     @Override
@@ -87,6 +88,9 @@ public class GroupLinkPlugin extends CordovaPlugin {
             case Actions.REQUEST_PERMISSIONS:
                 this.requestGlPermissions();
                 callbackContext.success("Permissions requested");
+                return true;
+            case Actions.GET_USER_ID:
+                this.getUserId(callbackContext);
                 return true;
             default:
                 callbackContext.error("Method " + action + " not found");
@@ -142,6 +146,10 @@ public class GroupLinkPlugin extends CordovaPlugin {
         if (countAutoStart < 1) {
             countAutoStart++;
         }
+    }
+
+    private void getUserId(CallbackContext callbackContext) {
+        callbackContext.success(GroupLink.getUserId(this.getContext()));
     }
 
     private boolean hasNeededPermissions() {

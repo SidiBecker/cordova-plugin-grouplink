@@ -15,6 +15,12 @@ groupLink.requestPermissions = function (param, success, error) {
     execMethod('requestPermissions', param, success, error);
 };
 
+groupLink.getUserId = function (param, success, error) {
+    execMethod('getUserId', param, success, error);
+};
+
+
+
 if (!window.plugins) {
     window.plugins = {};
 }
