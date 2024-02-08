@@ -64,6 +64,11 @@ public class GroupLinkPlugin extends CordovaPlugin {
     private int count = 0;
     private int countAutoStart = 0;
 
+    private interface Actions {
+        public static final String REGISTER = "register";
+        public static final String REQUEST_PERMISSIONS = "requestPermissions";
+    }
+
     private Context getContext() {
         return this.cordova.getActivity().getApplicationContext();
     }
@@ -76,10 +81,10 @@ public class GroupLinkPlugin extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
         switch (action) {
-            case "register":
+            case Actions.REGISTER:
                 this.register(args, callbackContext);
                 return true;
-            case "requestPermissions":
+            case Actions.REQUEST_PERMISSIONS:
                 this.requestGlPermissions();
                 callbackContext.success("Permissions requested");
                 return true;
