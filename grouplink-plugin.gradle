@@ -1,0 +1,7 @@
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    implementation 'com.grouplinknetwork:lib-grouplinknetwork:4.3.12'
+}

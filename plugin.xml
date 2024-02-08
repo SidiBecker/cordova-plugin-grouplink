@@ -7,6 +7,11 @@
         <clobbers target="cordova.plugins.GroupLinkPlugin" />
     </js-module>
     <platform name="android">
+
+        <!-- <framework src="com.grouplinknetwork:lib-grouplinknetwork:4.3.12" /> -->
+
+        <framework src="grouplink-plugin.gradle" custom="true" type="gradleReference" />
+
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="GroupLinkPlugin">
                 <param name="android-package" value="cordova-plugin-grouplink.GroupLinkPlugin" />
@@ -15,5 +20,33 @@
         <config-file parent="/*" target="AndroidManifest.xml"></config-file>
         <source-file src="src/android/GroupLinkPlugin.java"
             target-dir="src/cordova-plugin-grouplink/GroupLinkPlugin" />
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission
+                android:name="android.permission.ACCESS_FINE_LOCATION " />
+            <uses-permission
+                android:name="android.permission.ACCESS_COARSE_LOCATION" />
+            <uses-permission
+                android:name="android.permission.BLUETOOTH_ADMIN" />
+            <uses-permission
+                android:name="android.permission.ACCESS_WIFI_STATE" />
+            <uses-permission
+                android:name="android.permission.FOREGROUND_SERVICE" />
+
+            <!-- Mandatory permissions for Android 12 and above.-->
+            <!-- Also, they should be asked in runtime. -->
+            <uses-permission
+                android:name="android.permission.BLUETOOTH_SCAN"
+                android:minSdkVersion="31"
+                android:usesPermissionFlags="neverForLocation" />
+            <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+            <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+            <!-- Mandatory permissions for Android 13 and above. -->
+            <!-- Also, should be asked in runtime. -->
+            <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+        </config-file>
+
     </platform>
 </plugin>

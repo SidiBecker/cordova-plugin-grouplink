@@ -1,5 +1,10 @@
 package cordova.plugin.grouplink;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.grouplinknetwork.GroupLink;
+
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 
@@ -14,19 +19,39 @@ public class GroupLinkPlugin extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        if (action.equals("coolMethod")) {
-            String message = args.getString(0);
-            this.coolMethod(message, callbackContext);
-            return true;
+
+        Log.w("GROUPLINK", "action: " + action);
+
+        switch (action) {
+            case "register":
+                this.register(args, callbackContext);
+                return true;
+            default:
+                callbackContext.error("Method " + action + " not found");
+                break;
         }
         return false;
     }
 
-    private void coolMethod(String message, CallbackContext callbackContext) {
-        if (message != null && message.length() > 0) {
-            callbackContext.success(message);
-        } else {
-            callbackContext.error("Expected one non-empty string argument.");
-        }
+    private void register(JSONArray args, CallbackContext callbackContext)  throws JSONException {
+
+        final JSONObject options = args.getJSONObject(0);
+
+        Log.w("OBJECT", options.toString());
+
+        Context context = this.cordova.getActivity().getApplicationContext();
+
+        String token =  options.getString("token");
+        Boolean test =  options.getBoolean("test");
+
+        Log.w("token", token);
+        Log.w("test", test.toString());
+
+        GroupLink.register(
+                context,
+                options.getString("token"),
+                options.getBoolean("test") //true if you want to test if the implementation is working.
+        );
+
     }
 }
