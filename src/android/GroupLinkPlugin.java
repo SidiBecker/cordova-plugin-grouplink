@@ -76,6 +76,7 @@ public class GroupLinkPlugin extends CordovaPlugin {
         public static final String REGISTER = "register";
         public static final String REQUEST_PERMISSIONS = "requestPermissions";
         public static final String GET_USER_ID = "getUserId";
+        public static final String CHECK_PERMISSIONS = "checkPermissions";
     }
 
     @Override
@@ -91,6 +92,9 @@ public class GroupLinkPlugin extends CordovaPlugin {
                 return true;
             case Actions.GET_USER_ID:
                 this.getUserId(callbackContext);
+                return true;
+            case Actions.CHECK_PERMISSIONS:
+                this.checkGlPermissions(callbackContext);
                 return true;
             default:
                 callbackContext.error("Method " + action + " not found");
@@ -123,6 +127,22 @@ public class GroupLinkPlugin extends CordovaPlugin {
         callbackContext.success("GroupLink registered");
 
     }
+
+    private void checkGlPermissions(CallbackContext callbackContext){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+           callbackContext(hasNeededPermissionsS());
+           return;
+       }
+       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+           callbackContext(hasNeededPermissionsQ());
+           return;
+       }
+       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+           callbackContext(hasNeededPermissions());
+           return;
+       }
+   }
+
 
     private void requestGlPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
