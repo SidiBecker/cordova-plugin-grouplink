@@ -63,24 +63,24 @@ public class GroupLinkPlugin extends CordovaPlugin {
     @RequiresApi(api = Build.VERSION_CODES.S)
     private static final String[] REQUIRED_PERMISSIONS_S = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             ? new String[] {
-            Manifest.permission.BLUETOOTH,
-            Manifest.permission.BLUETOOTH_ADMIN,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.BLUETOOTH_SCAN,
-            Manifest.permission.BLUETOOTH_ADVERTISE,
-            Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.POST_NOTIFICATIONS
-    }
+                    Manifest.permission.BLUETOOTH,
+                    Manifest.permission.BLUETOOTH_ADMIN,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_ADVERTISE,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.POST_NOTIFICATIONS
+            }
             : new String[] {
-            Manifest.permission.BLUETOOTH,
-            Manifest.permission.BLUETOOTH_ADMIN,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.BLUETOOTH_SCAN,
-            Manifest.permission.BLUETOOTH_ADVERTISE,
-            Manifest.permission.BLUETOOTH_CONNECT
-    };
+                    Manifest.permission.BLUETOOTH,
+                    Manifest.permission.BLUETOOTH_ADMIN,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_ADVERTISE,
+                    Manifest.permission.BLUETOOTH_CONNECT
+            };
 
     private int count = 0;
     private int countAutoStart = 0;
@@ -100,6 +100,30 @@ public class GroupLinkPlugin extends CordovaPlugin {
         public static final String CHECK_PERMISSIONS = "checkPermissions";
         public static final String SUBSCRIBE_PERMISSION_STATUS = "subscribePermissionsStatus";
         public static final String UNSUBSCRIBE_PERMISSION_STATUS = "unsubscribePermissionsStatus";
+    }
+
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+    }
+
+    @Override
+    public void onRequestPermissionResult(int requestCode, String[] permissions,
+            int[] grantResults) throws JSONException {
+
+        sendPermissionsStatus();
+
+        if (requestCode == REQUEST_PERMISSION_CODE) {
+            if (count < REQUIRED_PERMISSIONS_Q.length) {
+                count++;
+                requestGlPermissions();
+                return;
+            }
+            if (countAutoStart < 1) {
+                countAutoStart++;
+            }
+        }
+        this.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -155,7 +179,6 @@ public class GroupLinkPlugin extends CordovaPlugin {
         sendMessageToJs(checkGlPermissions(null), permissionStatusHandler);
     }
 
-
     private void sendMessageToJs(Boolean message, CallbackContext callback) {
         final PluginResult result = new PluginResult(PluginResult.Status.OK, message);
         result.setKeepCallback(true);
@@ -191,21 +214,21 @@ public class GroupLinkPlugin extends CordovaPlugin {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Boolean status = hasNeededPermissionsS();
             if (callbackContext != null) {
-                callbackContext.success(status.toString());
+                callbackContext.success("S " + status.toString());
             }
             return status;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             Boolean status = hasNeededPermissionsQ();
             if (callbackContext != null) {
-                callbackContext.success(status.toString());
+                callbackContext.success("Q " + status.toString());
             }
             return status;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             Boolean status = hasNeededPermissions();
             if (callbackContext != null) {
-                callbackContext.success(status.toString());
+                callbackContext.success("M " + status.toString());
             }
             return status;
         }
@@ -243,8 +266,7 @@ public class GroupLinkPlugin extends CordovaPlugin {
 
     private boolean hasNeededPermissions() {
         for (String permission : REQUIRED_PERMISSIONS) {
-            if (ActivityCompat.checkSelfPermission(this.getContext(),
-                    permission) != PackageManager.PERMISSION_GRANTED) {
+            if (!cordova.hasPermission(permission)) {
                 return false;
             }
         }
@@ -253,8 +275,7 @@ public class GroupLinkPlugin extends CordovaPlugin {
 
     private boolean hasNeededPermissionsQ() {
         for (String permission : REQUIRED_PERMISSIONS_Q) {
-            if (ActivityCompat.checkSelfPermission(this.getContext(),
-                    permission) != PackageManager.PERMISSION_GRANTED) {
+            if (!cordova.hasPermission(permission)) {
                 return false;
             }
         }
@@ -264,8 +285,8 @@ public class GroupLinkPlugin extends CordovaPlugin {
     @RequiresApi(Build.VERSION_CODES.S)
     private boolean hasNeededPermissionsS() {
         for (String permission : REQUIRED_PERMISSIONS_S) {
-            if (ActivityCompat.checkSelfPermission(this.getContext(),
-                    permission) != PackageManager.PERMISSION_GRANTED) {
+
+            if (!cordova.hasPermission(permission)) {
                 return false;
             }
         }
@@ -274,17 +295,17 @@ public class GroupLinkPlugin extends CordovaPlugin {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private void requestPermissions() {
-        this.getActivity().requestPermissions(REQUIRED_PERMISSIONS, REQUEST_PERMISSION_CODE);
+        cordova.requestPermissions(this, REQUEST_PERMISSION_CODE, REQUIRED_PERMISSIONS);
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private void requestPermissionsQ() {
-        this.getActivity().requestPermissions(REQUIRED_PERMISSIONS_Q, REQUEST_PERMISSION_CODE);
+        cordova.requestPermissions(this, REQUEST_PERMISSION_CODE, REQUIRED_PERMISSIONS_Q);
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
     private void requestPermissionsS() {
-        this.getActivity().requestPermissions(REQUIRED_PERMISSIONS_S, REQUEST_PERMISSION_CODE);
+        cordova.requestPermissions(this, REQUEST_PERMISSION_CODE, REQUIRED_PERMISSIONS_S);
     }
 
     @SuppressWarnings("deprecation")
@@ -296,21 +317,4 @@ public class GroupLinkPlugin extends CordovaPlugin {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
-        sendPermissionsStatus();
-
-        if (requestCode == REQUEST_PERMISSION_CODE) {
-            if (count < REQUIRED_PERMISSIONS_Q.length) {
-                count++;
-                requestGlPermissions();
-                return;
-            }
-            if (countAutoStart < 1) {
-                countAutoStart++;
-            }
-        }
-        this.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
 }
