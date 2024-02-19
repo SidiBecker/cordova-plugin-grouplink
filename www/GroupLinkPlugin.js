@@ -23,6 +23,15 @@ groupLink.checkPermissions = function (param, success, error) {
     execMethod('checkPermissions', param, success, error);
 };
 
+groupLink.subscribePermissionsStatus = function (param, success, error) {
+    execMethod('subscribePermissionsStatus', param, success, error);
+};
+
+groupLink.unsubscribePermissionsStatus = function (param, success, error) {
+    execMethod('unsubscribePermissionsStatus', param, success, error);
+};
+
+
 
 if (!window.plugins) {
     window.plugins = {};

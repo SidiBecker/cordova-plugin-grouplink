@@ -14,6 +14,11 @@ import androidx.core.app.ActivityCompat;
 import com.grouplinknetwork.GroupLink;
 
 import org.apache.cordova.CordovaPlugin;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.cordova.CallbackContext;
 
 import org.json.JSONArray;
@@ -21,6 +26,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class GroupLinkPlugin extends CordovaPlugin {
+
+    // list of subscribers
+    private Map<CallbackContext> permissionStatusHandler;
 
     private static final int REQUEST_PERMISSION_CODE = 420;
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 0;
@@ -72,35 +80,87 @@ public class GroupLinkPlugin extends CordovaPlugin {
         return this.cordova.getActivity();
     }
 
-    private interface Actions{
+    private interface Actions {
         public static final String REGISTER = "register";
         public static final String REQUEST_PERMISSIONS = "requestPermissions";
         public static final String GET_USER_ID = "getUserId";
         public static final String CHECK_PERMISSIONS = "checkPermissions";
+        public static final String SUBSCRIBE_PERMISSION_STATUS = "subscribePermissionsStatus";
+        public static final String UNSUBSCRIBE_PERMISSION_STATUS = "unsubscribePermissionsStatus";
+    }
+
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+
+        if (subscribers == null) {
+            subscribers = new HashMap<String, CallbackContext>();
+        }
     }
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
         switch (action) {
+
             case Actions.REGISTER:
                 this.register(args, callbackContext);
                 return true;
+
             case Actions.REQUEST_PERMISSIONS:
                 this.requestGlPermissions();
                 callbackContext.success("Permissions requested");
                 return true;
+
             case Actions.GET_USER_ID:
                 this.getUserId(callbackContext);
                 return true;
+
             case Actions.CHECK_PERMISSIONS:
                 this.checkGlPermissions(callbackContext);
                 return true;
+
+            case Actions.SUBSCRIBE_PERMISSION_STATUS:
+                this.subscribePermissionsStatus(callbackContext);
+                return true;
+
+            case Actions.UNSUBSCRIBE_PERMISSION_STATUS:
+                this.unsubscribePermissionsStatus();
+                return true;
+
             default:
                 callbackContext.error("Method " + action + " not found");
                 break;
         }
         return false;
+    }
+
+    private void subscribePermissionsStatus(final CallbackContext callbackContext) {
+        permissionStatusHandler = callbackContext;
+    }
+
+    private void unsubscribePermissionsStatus() {
+        permissionStatusHandler = null;
+    }
+
+    private void sendPermissionsStatus() {
+        if (permissionStatusHandler == null) {
+            return;
+        }
+
+        sendMessageToJs(checkGlPermissions(null), permissionStatusHandler);
+    }
+
+    /**
+     * Send message to JS side.
+     *
+     * @param message  message to send
+     * @param callback to what callback we are sending the message
+     */
+    private void sendMessageToJs(Boolean message, CallbackContext callback) {
+        final PluginResult result = new PluginResult(PluginResult.Status.OK, message);
+        result.setKeepCallback(true);
+        callback.sendPluginResult(result);
     }
 
     private void register(JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -128,21 +188,29 @@ public class GroupLinkPlugin extends CordovaPlugin {
 
     }
 
-    private void checkGlPermissions(CallbackContext callbackContext){
+    private Boolean checkGlPermissions(CallbackContext callbackContext) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-           callbackContext(hasNeededPermissionsS());
-           return;
-       }
-       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-           callbackContext(hasNeededPermissionsQ());
-           return;
-       }
-       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-           callbackContext(hasNeededPermissions());
-           return;
-       }
-   }
-
+            Boolean status = hasNeededPermissionsS();
+            if (callbackContext != null) {
+                callbackContext(status);
+            }
+            return status;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            Boolean status = hasNeededPermissionsQ();
+            if (callbackContext != null) {
+                callbackContext(status);
+            }
+            return status;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            Boolean status = hasNeededPermissions();
+            if (callbackContext != null) {
+                callbackContext(status);
+            }
+            return status;
+        }
+    }
 
     private void requestGlPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -229,6 +297,9 @@ public class GroupLinkPlugin extends CordovaPlugin {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        sendPermissionsStatus();
+
         if (requestCode == REQUEST_PERMISSION_CODE) {
             if (count < REQUIRED_PERMISSIONS_Q.length) {
                 count++;
