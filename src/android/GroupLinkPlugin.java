@@ -25,10 +25,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.nordnetab.cordova.ul.js.JSAction;
+import com.nordnetab.cordova.ul.model.JSMessage;
+import com.nordnetab.cordova.ul.model.ULHost;
+import com.nordnetab.cordova.ul.parser.ULConfigXmlParser;
+
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaArgs;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.PluginResult;
+import org.json.JSONException;
+
 public class GroupLinkPlugin extends CordovaPlugin {
 
     // list of subscribers
-    private Map<CallbackContext> permissionStatusHandler;
+    private CallbackContext permissionStatusHandler;
 
     private static final int REQUEST_PERMISSION_CODE = 420;
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 0;
@@ -50,24 +63,24 @@ public class GroupLinkPlugin extends CordovaPlugin {
     @RequiresApi(api = Build.VERSION_CODES.S)
     private static final String[] REQUIRED_PERMISSIONS_S = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             ? new String[] {
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH_ADVERTISE,
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.POST_NOTIFICATIONS
-            }
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_ADVERTISE,
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.POST_NOTIFICATIONS
+    }
             : new String[] {
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH_ADVERTISE,
-                    Manifest.permission.BLUETOOTH_CONNECT
-            };
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_ADVERTISE,
+            Manifest.permission.BLUETOOTH_CONNECT
+    };
 
     private int count = 0;
     private int countAutoStart = 0;
@@ -87,15 +100,6 @@ public class GroupLinkPlugin extends CordovaPlugin {
         public static final String CHECK_PERMISSIONS = "checkPermissions";
         public static final String SUBSCRIBE_PERMISSION_STATUS = "subscribePermissionsStatus";
         public static final String UNSUBSCRIBE_PERMISSION_STATUS = "unsubscribePermissionsStatus";
-    }
-
-    @Override
-    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-        super.initialize(cordova, webView);
-
-        if (subscribers == null) {
-            subscribers = new HashMap<String, CallbackContext>();
-        }
     }
 
     @Override
@@ -151,12 +155,7 @@ public class GroupLinkPlugin extends CordovaPlugin {
         sendMessageToJs(checkGlPermissions(null), permissionStatusHandler);
     }
 
-    /**
-     * Send message to JS side.
-     *
-     * @param message  message to send
-     * @param callback to what callback we are sending the message
-     */
+
     private void sendMessageToJs(Boolean message, CallbackContext callback) {
         final PluginResult result = new PluginResult(PluginResult.Status.OK, message);
         result.setKeepCallback(true);
@@ -192,24 +191,26 @@ public class GroupLinkPlugin extends CordovaPlugin {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Boolean status = hasNeededPermissionsS();
             if (callbackContext != null) {
-                callbackContext(status);
+                callbackContext.success(status.toString());
             }
             return status;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             Boolean status = hasNeededPermissionsQ();
             if (callbackContext != null) {
-                callbackContext(status);
+                callbackContext.success(status.toString());
             }
             return status;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             Boolean status = hasNeededPermissions();
             if (callbackContext != null) {
-                callbackContext(status);
+                callbackContext.success(status.toString());
             }
             return status;
         }
+
+        return false;
     }
 
     private void requestGlPermissions() {
