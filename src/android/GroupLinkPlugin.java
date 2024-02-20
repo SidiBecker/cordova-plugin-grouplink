@@ -179,7 +179,7 @@ public class GroupLinkPlugin extends CordovaPlugin {
 
         for (String permission : permissions) {
             if (!cordova.hasPermission(permission)) {
-                list.add(permission);
+                list.add(permission.replace("android.permission.", ""));
             }
         }
 
