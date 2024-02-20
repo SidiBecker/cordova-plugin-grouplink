@@ -1,46 +1,55 @@
-var exec = require('cordova/exec');
+cordova.define("cordova-plugin-grouplink.groupLink", function (require, exports, module) {
+    var exec = require('cordova/exec');
 
-var groupLink = function() {
-};
+    var groupLink = function () {
+    };
 
-var execMethod = function(method, param, success, error) {
-    exec(success, error, 'GroupLinkPlugin', method, [param]);
-};
+    var ensureBoolean = function (callback) {
+        return function (result) {
 
-var toBoolean = function(value){
-    return !!value;
-}
+            if (typeof result == "boolean") {
+                callback(result);
+                return;
+            }
 
-groupLink.register = function (param, success, error) {
-    execMethod('register', param, success, error);
-};
+            callback(result == "true");
+        }
+    };
 
-groupLink.requestPermissions = function (param, success, error) {
-    execMethod('requestPermissions', param, success, error);
-};
+    var execMethod = function (method, param, success, error) {
+        exec(success, error, 'GroupLinkPlugin', method, [param]);
+    };
 
-groupLink.getUserId = function (param, success, error) {
-    execMethod('getUserId', param, success, error);
-};
+    groupLink.register = function (param, success, error) {
+        execMethod('register', param, success, error);
+    };
 
-groupLink.checkPermissions = function (param, success, error) {
-    execMethod('checkPermissions', param, toBoolean(success), error);
-};
+    groupLink.requestPermissions = function (param, success, error) {
+        execMethod('requestPermissions', param, success, error);
+    };
 
-groupLink.subscribePermissionsStatus = function (param, success, error) {
-    execMethod('subscribePermissionsStatus', param, toBoolean(success), error);
-};
+    groupLink.getUserId = function (param, success, error) {
+        execMethod('getUserId', param, success, error);
+    };
 
-groupLink.unsubscribePermissionsStatus = function (param, success, error) {
-    execMethod('unsubscribePermissionsStatus', param, success, error);
-};
+    groupLink.checkPermissions = function (param, success, error) {
+        execMethod('checkPermissions', param, ensureBoolean(success), error);
+    };
 
+    groupLink.subscribePermissionsStatus = function (param, success, error) {
+        execMethod('subscribePermissionsStatus', param, ensureBoolean(success), error);
+    };
 
+    groupLink.unsubscribePermissionsStatus = function (param, success, error) {
+        execMethod('unsubscribePermissionsStatus', param, success, error);
+    };
 
-if (!window.plugins) {
-    window.plugins = {};
-}
-  
-window.plugins.groupLink = groupLink;
+    if (!window.plugins) {
+        window.plugins = {};
+    }
 
-module.exports = groupLink;
+    window.plugins.groupLink = groupLink;
+
+    module.exports = groupLink;
+
+});

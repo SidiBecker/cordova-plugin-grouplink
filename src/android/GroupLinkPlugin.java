@@ -214,21 +214,21 @@ public class GroupLinkPlugin extends CordovaPlugin {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Boolean status = hasNeededPermissionsS();
             if (callbackContext != null) {
-                callbackContext.success("S " + status.toString());
+                callbackContext.success(status.toString());
             }
             return status;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             Boolean status = hasNeededPermissionsQ();
             if (callbackContext != null) {
-                callbackContext.success("Q " + status.toString());
+                callbackContext.success(status.toString());
             }
             return status;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             Boolean status = hasNeededPermissions();
             if (callbackContext != null) {
-                callbackContext.success("M " + status.toString());
+                callbackContext.success(status.toString());
             }
             return status;
         }
