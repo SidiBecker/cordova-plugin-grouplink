@@ -7,6 +7,10 @@ var execMethod = function(method, param, success, error) {
     exec(success, error, 'GroupLinkPlugin', method, [param]);
 };
 
+var toBoolean = function(value){
+    return !!value;
+}
+
 groupLink.register = function (param, success, error) {
     execMethod('register', param, success, error);
 };
@@ -20,11 +24,11 @@ groupLink.getUserId = function (param, success, error) {
 };
 
 groupLink.checkPermissions = function (param, success, error) {
-    execMethod('checkPermissions', param, success, error);
+    execMethod('checkPermissions', param, toBoolean(success), error);
 };
 
 groupLink.subscribePermissionsStatus = function (param, success, error) {
-    execMethod('subscribePermissionsStatus', param, success, error);
+    execMethod('subscribePermissionsStatus', param, toBoolean(success), error);
 };
 
 groupLink.unsubscribePermissionsStatus = function (param, success, error) {
