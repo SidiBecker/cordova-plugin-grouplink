@@ -118,8 +118,8 @@ public class GroupLinkPlugin extends CordovaPlugin {
                 return true;
 
             case Actions.REQUEST_PERMISSIONS:
+                permissionStatusHandler = callbackContext;
                 this.requestGlPermissions();
-                callbackContext.success("Permissions requested");
                 return true;
 
             case Actions.GET_USER_ID:
@@ -185,7 +185,7 @@ public class GroupLinkPlugin extends CordovaPlugin {
 
         Log.w("GL:", list.toString());
 
-        callbackContext.success(list.toString());
+        callbackContext.success(String.join(",", list));
     }
 
     private void sendPermissionsStatus() {
