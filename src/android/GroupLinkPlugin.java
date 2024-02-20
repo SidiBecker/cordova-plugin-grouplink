@@ -206,7 +206,7 @@ public class GroupLinkPlugin extends CordovaPlugin {
                 test // true if you want to test if the implementation is working.
         );
 
-        callbackContext.success("GroupLink registered");
+        callbackContext.success("true");
 
     }
 
