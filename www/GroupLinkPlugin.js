@@ -16,6 +16,22 @@ cordova.define("cordova-plugin-grouplink.groupLink", function (require, exports,
         }
     };
 
+    var ensureArray = function (callback) {
+        return function (result) {
+
+            if (result == null) {
+                return [];
+            }
+
+            if (Array.isArray(result)) {
+                callback(result);
+                return;
+            }
+
+            callback(JSON.parse(result));
+        }
+    };
+
     var execMethod = function (method, param, success, error) {
         exec(success, error, 'GroupLinkPlugin', method, [param]);
     };
@@ -45,7 +61,7 @@ cordova.define("cordova-plugin-grouplink.groupLink", function (require, exports,
     };
 
     groupLink.getUnauthorizedPermissions = function (param, success, error) {
-        execMethod('getUnauthorizedPermissions', param, success, error);
+        execMethod('getUnauthorizedPermissions', param, ensureArray(success), error);
     };
 
 
