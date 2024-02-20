@@ -44,6 +44,11 @@ cordova.define("cordova-plugin-grouplink.groupLink", function (require, exports,
         execMethod('unsubscribePermissionsStatus', param, success, error);
     };
 
+    groupLink.getUnauthorizedPermissions = function (param, success, error) {
+        execMethod('getUnauthorizedPermissions', param, success, error);
+    };
+
+
     if (!window.plugins) {
         window.plugins = {};
     }

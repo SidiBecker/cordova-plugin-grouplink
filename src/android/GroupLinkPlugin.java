@@ -15,7 +15,9 @@ import com.grouplinknetwork.GroupLink;
 
 import org.apache.cordova.CordovaPlugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,9 +41,6 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONException;
 
 public class GroupLinkPlugin extends CordovaPlugin {
-
-    // list of subscribers
-    private CallbackContext permissionStatusHandler;
 
     private static final int REQUEST_PERMISSION_CODE = 420;
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 0;
@@ -84,6 +83,7 @@ public class GroupLinkPlugin extends CordovaPlugin {
 
     private int count = 0;
     private int countAutoStart = 0;
+    private CallbackContext permissionStatusHandler;
 
     private Context getContext() {
         return this.cordova.getActivity().getApplicationContext();
@@ -100,30 +100,12 @@ public class GroupLinkPlugin extends CordovaPlugin {
         public static final String CHECK_PERMISSIONS = "checkPermissions";
         public static final String SUBSCRIBE_PERMISSION_STATUS = "subscribePermissionsStatus";
         public static final String UNSUBSCRIBE_PERMISSION_STATUS = "unsubscribePermissionsStatus";
+        public static final String GET_UNAUTHORIZED_PERMISSIONS = "getUnauthorizedPermissions";
     }
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
-    }
-
-    @Override
-    public void onRequestPermissionResult(int requestCode, String[] permissions,
-            int[] grantResults) throws JSONException {
-
-        sendPermissionsStatus();
-
-        if (requestCode == REQUEST_PERMISSION_CODE) {
-            if (count < REQUIRED_PERMISSIONS_Q.length) {
-                count++;
-                requestGlPermissions();
-                return;
-            }
-            if (countAutoStart < 1) {
-                countAutoStart++;
-            }
-        }
-        this.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -153,7 +135,12 @@ public class GroupLinkPlugin extends CordovaPlugin {
                 return true;
 
             case Actions.UNSUBSCRIBE_PERMISSION_STATUS:
-                this.unsubscribePermissionsStatus();
+                permissionStatusHandler = null;
+                callbackContext.success("true");
+                return true;
+
+            case Actions.GET_UNAUTHORIZED_PERMISSIONS:
+                this.getUnauthorizedPermissions(callbackContext);
                 return true;
 
             default:
@@ -167,8 +154,38 @@ public class GroupLinkPlugin extends CordovaPlugin {
         permissionStatusHandler = callbackContext;
     }
 
-    private void unsubscribePermissionsStatus() {
-        permissionStatusHandler = null;
+    private void getUnauthorizedPermissions(final CallbackContext callbackContext) {
+
+        List<String> list = new ArrayList<>();
+
+        String[] permissions = null;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissions = REQUIRED_PERMISSIONS_S;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            permissions = REQUIRED_PERMISSIONS_Q;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            permissions = REQUIRED_PERMISSIONS;
+        }
+
+        if (permissions == null){
+            callbackContext.success(list.toString());
+            return;
+        }
+
+        for (String permission : permissions) {
+            if (!cordova.hasPermission(permission)) {
+                list.add(permission);
+            }
+        }
+
+        Log.w("GL:", list.toString());
+
+        callbackContext.success(list.toString());
     }
 
     private void sendPermissionsStatus() {
@@ -285,7 +302,6 @@ public class GroupLinkPlugin extends CordovaPlugin {
     @RequiresApi(Build.VERSION_CODES.S)
     private boolean hasNeededPermissionsS() {
         for (String permission : REQUIRED_PERMISSIONS_S) {
-
             if (!cordova.hasPermission(permission)) {
                 return false;
             }
@@ -317,4 +333,22 @@ public class GroupLinkPlugin extends CordovaPlugin {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public void onRequestPermissionResult(int requestCode, String[] permissions,
+            int[] grantResults) throws JSONException {
+
+        sendPermissionsStatus();
+
+        if (requestCode == REQUEST_PERMISSION_CODE) {
+            if (count < REQUIRED_PERMISSIONS_Q.length) {
+                count++;
+                requestGlPermissions();
+                return;
+            }
+            if (countAutoStart < 1) {
+                countAutoStart++;
+            }
+        }
+        this.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 }
