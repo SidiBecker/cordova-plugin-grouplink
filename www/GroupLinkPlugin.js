@@ -18,19 +18,19 @@ var ensureBoolean = function (callback) {
 var ensureArray = function (callback) {
     return function (result) {
 
-        if (result == null) {
-            return [];
-        }
-
-        if (Array.isArray(result)) {
-            callback(result);
+        if (result == null || result == "") {
+            callback([]);
             return;
         }
 
-        callback(JSON.parse(result));
+        if (!result.includes(",")) {
+            callback([result]);
+            return;
+        }
+
+        callback(result.split(","));
     }
 };
-
 var execMethod = function (method, param, success, error) {
     exec(success, error, 'GroupLinkPlugin', method, [param]);
 };
