@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
@@ -182,8 +181,6 @@ public class GroupLinkPlugin extends CordovaPlugin {
                 list.add(permission.replace("android.permission.", ""));
             }
         }
-
-        Log.w("GL:", list.toString());
 
         callbackContext.success(String.join(",", list));
     }
