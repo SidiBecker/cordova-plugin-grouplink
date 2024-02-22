@@ -12,8 +12,6 @@
 
     <platform name="android">
 
-        <!-- <framework src="com.grouplinknetwork:lib-grouplinknetwork:4.3.12" /> -->
-
         <framework src="src/android/grouplink-plugin.gradle" custom="true" type="gradleReference" />
 
         <config-file parent="/*" target="res/xml/config.xml">
@@ -56,4 +54,27 @@
         </config-file>
 
     </platform>
+
+    <platform name="ios">
+        <preference name="GROUP_LINK_PODS_VERSION" default="4.4.1"/>
+
+        <config-file target="config.xml" parent="/*">
+            <feature name="GroupLinkPlugin">
+                <param name="ios-package" value="GroupLinkPlugin" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/GroupLinkPlugin.h" />
+        <source-file src="src/ios/GroupLinkPlugin.m" />
+
+        <podspec>
+            <config>
+                <source url="https://cdn.cocoapods.org/"/>
+            </config>
+            <pods>
+                <pod name="GroupLinkSDK" spec="$GROUP_LINK_PODS_VERSION" />
+            </pods>
+        </podspec>
+    </platform>
+
 </plugin>
