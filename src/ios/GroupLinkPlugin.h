@@ -2,6 +2,8 @@
 
 @interface GroupLinkPlugin : CDVPlugin
 
-- (void)echo:(CDVInvokedUrlCommand*)command;
+- (void)init:(CDVInvokedUrlCommand*)command;
+
+- (void)getUserId:(CDVInvokedUrlCommand*)command;
 
 @end

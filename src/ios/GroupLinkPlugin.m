@@ -5,21 +5,6 @@
 
 @implementation GroupLinkPlugin
 
-
-- (void)echo:(CDVInvokedUrlCommand*)command
-{
-    CDVPluginResult* pluginResult = nil;
-    NSString* echo = [command.arguments objectAtIndex:0];
-
-    if (echo != nil && [echo length] > 0) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:echo];
-    } else {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
-    }
-
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-
 - (void)init:(CDVInvokedUrlCommand*)command
 {
     CDVPluginResult* pluginResult = nil;
@@ -27,8 +12,7 @@
     NSString *token = [params valueForKey:@"token"];
 
     if (token != nil && [token length] > 0) {
-
-        // Override point for customization after application launch.
+        
         [GroupLinkSDK startWithToken:token];
 
         [GroupLinkSDK startBluetooth];
@@ -40,6 +24,16 @@
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"Invalid token"];
     }
 
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)getUserId:(CDVInvokedUrlCommand*)command
+{
+
+    NSString *userId = [GroupLinkSDK getUserID];
+
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: userId];
+    
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
