@@ -64,6 +64,12 @@
             </feature>
         </config-file>
 
+        <config-file target="*-Info.plist" parent="BGTaskSchedulerPermittedIdentifiers">
+            <array>
+                <string>com.grouplinknetwork.bgtask</string>
+            </array>
+          </config-file>
+
         <header-file src="src/ios/GroupLinkPlugin.h" />
         <source-file src="src/ios/GroupLinkPlugin.m" />
 
