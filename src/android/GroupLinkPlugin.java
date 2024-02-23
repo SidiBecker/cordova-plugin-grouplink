@@ -97,9 +97,7 @@ public class GroupLinkPlugin extends CordovaPlugin {
         public static final String REQUEST_PERMISSIONS = "requestPermissions";
         public static final String GET_USER_ID = "getUserId";
         public static final String CHECK_PERMISSIONS = "checkPermissions";
-        public static final String SUBSCRIBE_PERMISSION_STATUS = "subscribePermissionsStatus";
         public static final String UNSUBSCRIBE_PERMISSION_STATUS = "unsubscribePermissionsStatus";
-        public static final String GET_UNAUTHORIZED_PERMISSIONS = "getUnauthorizedPermissions";
     }
 
     @Override
@@ -129,17 +127,9 @@ public class GroupLinkPlugin extends CordovaPlugin {
                 this.checkGlPermissions(callbackContext);
                 return true;
 
-            case Actions.SUBSCRIBE_PERMISSION_STATUS:
-                this.subscribePermissionsStatus(callbackContext);
-                return true;
-
             case Actions.UNSUBSCRIBE_PERMISSION_STATUS:
                 permissionStatusHandler = null;
                 callbackContext.success("true");
-                return true;
-
-            case Actions.GET_UNAUTHORIZED_PERMISSIONS:
-                this.getUnauthorizedPermissions(callbackContext);
                 return true;
 
             default:
@@ -147,42 +137,6 @@ public class GroupLinkPlugin extends CordovaPlugin {
                 break;
         }
         return false;
-    }
-
-    private void subscribePermissionsStatus(final CallbackContext callbackContext) {
-        permissionStatusHandler = callbackContext;
-    }
-
-    private void getUnauthorizedPermissions(final CallbackContext callbackContext) {
-
-        List<String> list = new ArrayList<>();
-
-        String[] permissions = null;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            permissions = REQUIRED_PERMISSIONS_S;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            permissions = REQUIRED_PERMISSIONS_Q;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            permissions = REQUIRED_PERMISSIONS;
-        }
-
-        if (permissions == null){
-            callbackContext.success(list.toString());
-            return;
-        }
-
-        for (String permission : permissions) {
-            if (!cordova.hasPermission(permission)) {
-                list.add(permission.replace("android.permission.", ""));
-            }
-        }
-
-        callbackContext.success(String.join(",", list));
     }
 
     private void sendPermissionsStatus() {

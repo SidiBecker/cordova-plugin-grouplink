@@ -51,16 +51,8 @@ groupLink.checkPermissions = function (param, success, error) {
     execMethod('checkPermissions', param, ensureBoolean(success), error);
 };
 
-groupLink.subscribePermissionsStatus = function (param, success, error) {
-    execMethod('subscribePermissionsStatus', param, ensureBoolean(success), error);
-};
-
 groupLink.unsubscribePermissionsStatus = function (param, success, error) {
     execMethod('unsubscribePermissionsStatus', param, success, error);
-};
-
-groupLink.getUnauthorizedPermissions = function (param, success, error) {
-    execMethod('getUnauthorizedPermissions', param, ensureArray(success), error);
 };
 
 groupLink.init = function (param, success, error) {
