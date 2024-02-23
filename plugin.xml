@@ -56,6 +56,7 @@
     </platform>
 
     <platform name="ios">
+
         <preference name="GROUP_LINK_PODS_VERSION" default="4.4.1"/>
 
         <config-file target="config.xml" parent="/*">
@@ -64,11 +65,37 @@
             </feature>
         </config-file>
 
+        <!-- Enable Required background modes -->
+        <!-- Location Updates, Uses Bluetooth LE accessories, Acts as a Bluetooth LE accessory, Background fetch, and Background processing  -->
+        <config-file target="*-Info.plist" parent="UIBackgroundModes">
+            <array>
+                <string>location</string>
+                <string>bluetooth-central</string>
+                <string>bluetooth-peripheral</string>
+                <string>fetch</string>
+                <string>processing</string>
+
+            </array>
+        </config-file>
+
+
+        <!-- Access Wifi Information -->
+        <config-file parent="com.apple.developer.networking.wifi-info" target="*/Entitlements-Debug.plist">
+            <true/>
+        </config-file>
+        
+        <config-file parent="com.apple.developer.networking.wifi-info" target="*/Entitlements-Release.plist">
+                <true/>
+        </config-file>
+
+
+        <!-- Enable background task functionality -->
         <config-file target="*-Info.plist" parent="BGTaskSchedulerPermittedIdentifiers">
             <array>
                 <string>com.grouplinknetwork.bgtask</string>
             </array>
           </config-file>
+          
 
         <header-file src="src/ios/GroupLinkPlugin.h" />
         <source-file src="src/ios/GroupLinkPlugin.m" />
