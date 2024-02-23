@@ -24,9 +24,9 @@
 {
     CDVPluginResult* pluginResult = nil;
     NSObject *params = [command.arguments objectAtIndex:0];
-    NSString token = [params valueForKey:@"token"];
+    NSString *token = [params valueForKey:@"token"];
 
-    if (echo != nil && [echo length] > 0) {
+    if (token != nil && [token length] > 0) {
 
         // Override point for customization after application launch.
         [GroupLinkSDK startWithToken:token];
