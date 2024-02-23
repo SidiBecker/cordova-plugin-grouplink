@@ -63,6 +63,10 @@ groupLink.getUnauthorizedPermissions = function (param, success, error) {
     execMethod('getUnauthorizedPermissions', param, ensureArray(success), error);
 };
 
+groupLink.init = function (param, success, error) {
+    execMethod('init', param, success, error);
+};
+
 
 if (!window.plugins) {
     window.plugins = {};
