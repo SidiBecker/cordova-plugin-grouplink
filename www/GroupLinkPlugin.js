@@ -15,49 +15,46 @@ var ensureBoolean = function (callback) {
     }
 };
 
-var ensureArray = function (callback) {
-    return function (result) {
-
-        if (result == null || result == "") {
-            callback([]);
-            return;
-        }
-
-        if (!result.includes(",")) {
-            callback([result]);
-            return;
-        }
-
-        callback(result.split(","));
-    }
-};
 var execMethod = function (method, param, success, error) {
     exec(success, error, 'GroupLinkPlugin', method, [param]);
 };
 
+
+// Android only
 groupLink.register = function (param, success, error) {
     execMethod('register', param, success, error);
 };
 
+// Android only
 groupLink.requestPermissions = function (param, success, error) {
     execMethod('requestPermissions', param, success, error);
 };
 
-groupLink.getUserId = function (param, success, error) {
-    execMethod('getUserId', param, success, error);
-};
-
+// Android only
 groupLink.checkPermissions = function (param, success, error) {
     execMethod('checkPermissions', param, ensureBoolean(success), error);
 };
 
+// Android only
 groupLink.unsubscribePermissionsStatus = function (param, success, error) {
     execMethod('unsubscribePermissionsStatus', param, success, error);
 };
 
+
+
+
+// iOS only
 groupLink.init = function (param, success, error) {
     execMethod('init', param, success, error);
 };
+
+
+
+// iOS and Android
+groupLink.getUserId = function (param, success, error) {
+    execMethod('getUserId', param, success, error);
+};
+
 
 
 if (!window.plugins) {
