@@ -1,16 +1,15 @@
 #import "GroupLinkPlugin.h"
-#import <Cordova/CDVPlugin.h>
 
 @import GroupLink;
 
 @implementation GroupLinkPlugin
 
-- (void)init:(CDVInvokedUrlCommand*)command
-{
+- (void)init:(CDVInvokedUrlCommand*)command{
+    
     CDVPluginResult* pluginResult = nil;
-    NSObject *params = [command.arguments objectAtIndex:0];
-    NSString *token = [params valueForKey:@"token"];
-
+    
+    NSString *token = [command.arguments objectAtIndex:0];
+    
     if (token != nil && [token length] > 0) {
         
         [GroupLinkSDK startWithToken:token];
@@ -27,8 +26,7 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void)getUserId:(CDVInvokedUrlCommand*)command
-{
+- (void)getUserId:(CDVInvokedUrlCommand*)command{
 
     NSString *userId = [GroupLinkSDK getUserID];
 
