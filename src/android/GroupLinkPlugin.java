@@ -4,40 +4,21 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Handler;
 
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
 
 import com.grouplinknetwork.GroupLink;
 
-import org.apache.cordova.CordovaPlugin;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cordova.CallbackContext;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.nordnetab.cordova.ul.js.JSAction;
-import com.nordnetab.cordova.ul.model.JSMessage;
-import com.nordnetab.cordova.ul.model.ULHost;
-import com.nordnetab.cordova.ul.parser.ULConfigXmlParser;
-
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class GroupLinkPlugin extends CordovaPlugin {
 
@@ -61,24 +42,24 @@ public class GroupLinkPlugin extends CordovaPlugin {
     @RequiresApi(api = Build.VERSION_CODES.S)
     private static final String[] REQUIRED_PERMISSIONS_S = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             ? new String[] {
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH_ADVERTISE,
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.POST_NOTIFICATIONS
-            }
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_ADVERTISE,
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.POST_NOTIFICATIONS
+    }
             : new String[] {
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH_ADVERTISE,
-                    Manifest.permission.BLUETOOTH_CONNECT
-            };
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_ADVERTISE,
+            Manifest.permission.BLUETOOTH_CONNECT
+    };
 
     private int count = 0;
     private int countAutoStart = 0;
@@ -229,7 +210,20 @@ public class GroupLinkPlugin extends CordovaPlugin {
     }
 
     private void getUserId(CallbackContext callbackContext) {
-        callbackContext.success(GroupLink.getUserId(this.getContext()));
+        String userId = GroupLink.getUserId(this.getContext());
+
+        if (userId == null || userId.contains("not registered")) {
+
+            GroupLinkPlugin me = this;
+
+            new Handler().postDelayed(() -> {
+                    me.getUserId(callbackContext);
+            }, 250);
+
+            return;
+        }
+
+        callbackContext.success(userId);
     }
 
     private boolean hasNeededPermissions() {
@@ -286,7 +280,7 @@ public class GroupLinkPlugin extends CordovaPlugin {
 
     @Override
     public void onRequestPermissionResult(int requestCode, String[] permissions,
-            int[] grantResults) throws JSONException {
+                                          int[] grantResults) throws JSONException {
 
         sendPermissionsStatus();
 
