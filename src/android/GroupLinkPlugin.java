@@ -212,17 +212,6 @@ public class GroupLinkPlugin extends CordovaPlugin {
     private void getUserId(CallbackContext callbackContext) {
         String userId = GroupLink.getUserId(this.getContext());
 
-        if (userId == null || userId.contains("not registered")) {
-
-            GroupLinkPlugin me = this;
-
-            new Handler().postDelayed(() -> {
-                    me.getUserId(callbackContext);
-            }, 250);
-
-            return;
-        }
-
         callbackContext.success(userId);
     }
 
