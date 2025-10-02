@@ -6,4 +6,6 @@
 
 - (void)getUserId:(CDVInvokedUrlCommand*)command;
 
+- (void)getUIBackgroundModes:(CDVInvokedUrlCommand*)command;
+
 @end
